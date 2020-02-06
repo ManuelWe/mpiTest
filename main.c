@@ -59,13 +59,7 @@ uint64_t update(int myoffset, int chunk, int myid)
             exit(1);
         }
     }
-    printf("Task %d\n",myid);
     return mysum;
-}
-
-uint64_t computeParallel()
-{
-
 }
 
 int main(int argc, char *argv[])
@@ -112,7 +106,6 @@ int main(int argc, char *argv[])
         serialSum = computeSerial();
     }
 
-    printf ("MPI task %d has started...  ", taskId);
     chunksize = (arrayLength / numTasks);
     leftover = (arrayLength % numTasks);
     tag2 = 1;
@@ -121,13 +114,13 @@ int main(int argc, char *argv[])
     /***** Master task only ******/
     if (taskId == MASTER)
     {
+        clock_t start = clock();
         /* Send each task its portion of the array - master keeps 1st part plus leftover elements */
         offset = chunksize + leftover;
         for (dest=1; dest<numTasks; dest++)
         {
             MPI_Send(&offset, 1, MPI_INT, dest, tag1, MPI_COMM_WORLD);
             MPI_Send(&p_array[offset], chunksize, MPI_UINT32_T, dest, tag2, MPI_COMM_WORLD);
-            printf("Sent %d elements to task %d offset= %d\n",chunksize,dest,offset);
             offset = offset + chunksize;
         }
 
@@ -146,6 +139,11 @@ int main(int argc, char *argv[])
 
         /* Get final sum and print sample results */
         MPI_Reduce(&mysum, &totalSum, 1, MPI_UINT64_T, MPI_SUM, MASTER, MPI_COMM_WORLD);
+        clock_t end = clock();
+        printf("Start time: %lu \n", start);
+        printf("End time: %lu \n", end);
+        float seconds = (float)(end - start) / CLOCKS_PER_SEC;
+        printf("Duration: %.2lf milliseconds\n", seconds*1000);
 
         printf("Parallel sum: %" PRIu64 "\n", totalSum);
 
