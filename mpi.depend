@@ -1,0 +1,32 @@
+# depslib dependency file v1.0
+1579085092 source:c:\users\wetzelm\onedrive - hewlett packard enterprise\emulator\mpi\main.c
+	<stdio.h>
+	<stdlib.h>
+	<stdint.h>
+	<inttypes.h>
+	<time.h>
+	<mpi.h>
+
+1314885558 c:\program files (x86)\mpich2\include\mpi.h
+	"mpio.h"
+	"mpicxx.h"
+
+1314885558 c:\program files (x86)\mpich2\include\mpio.h
+	"mpi.h"
+
+1314885560 c:\program files (x86)\mpich2\include\mpicxx.h
+	<stdio.h>
+
+1572866616 c:\program files (x86)\microsoft sdks\mpi\include\mpi.h
+	<stdint.h>
+	<sal.h>
+	<stdint.h>
+
+1580984889 source:c:\users\wetzelm\onedrive - hewlett packard enterprise\emulator\programme\mpi\main.c
+	<stdio.h>
+	<stdlib.h>
+	<stdint.h>
+	<inttypes.h>
+	<time.h>
+	<mpi.h>
+
