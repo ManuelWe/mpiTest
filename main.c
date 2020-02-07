@@ -5,6 +5,19 @@
 #include <time.h>
 #include <mpi.h>
 
+#ifdef LIKWID_PERFMON
+#include <likwid.h>
+#else
+#define LIKWID_MARKER_INIT
+#define LIKWID_MARKER_THREADINIT
+#define LIKWID_MARKER_SWITCH
+#define LIKWID_MARKER_REGISTER(regionTag)
+#define LIKWID_MARKER_START(regionTag)
+#define LIKWID_MARKER_STOP(regionTag)
+#define LIKWID_MARKER_CLOSE
+#define LIKWID_MARKER_GET(regionTag, nevents, events, time, count)
+#endif
+
 #define MASTER 0
 
 uint64_t arrayLength;
@@ -65,6 +78,8 @@ uint64_t update(int myoffset, int chunk, int myid)
 int main(int argc, char *argv[])
 {
     printf("Initializing array....\n");
+    LIKWID_MARKER_INIT;
+    LIKWID_MARKER_THREADINIT;
 
     uint64_t parallelSum;
     uint64_t serialSum;
@@ -115,6 +130,7 @@ int main(int argc, char *argv[])
     if (taskId == MASTER)
     {
         clock_t start = clock();
+        LIKWID_MARKER_START("parallel");
         /* Send each task its portion of the array - master keeps 1st part plus leftover elements */
         offset = chunksize + leftover;
         for (dest=1; dest<numTasks; dest++)
@@ -139,6 +155,7 @@ int main(int argc, char *argv[])
 
         /* Get final sum and print sample results */
         MPI_Reduce(&mysum, &totalSum, 1, MPI_UINT64_T, MPI_SUM, MASTER, MPI_COMM_WORLD);
+        LIKWID_MARKER_STOP("parallel");
         clock_t end = clock();
         printf("Start time: %lu \n", start);
         printf("End time: %lu \n", end);
@@ -180,6 +197,7 @@ int main(int argc, char *argv[])
     } /* end of non-master */
 
     MPI_Finalize();
+    LIKWID_MARKER_CLOSE;
 
     free(p_array);
     return 0;
